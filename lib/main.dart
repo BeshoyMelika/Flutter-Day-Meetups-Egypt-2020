@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutterday/screens/auth_screen.dart';
+import 'package:flutterday/screens/intro_screen.dart';
 
 import 'home.dart';
 
@@ -20,8 +22,29 @@ class MyApp extends StatelessWidget {
           headline3: TextStyle(fontSize: 20, color: Colors.white.withAlpha(140)),
           headline4: TextStyle(fontSize: 16)
         ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Color(0xfff2f9fe),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey[200]),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey[200]),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey[200]),
+            borderRadius: BorderRadius.circular(25),
+          ),
+        ),
       ),
-      home: Home(),
+      home: IntroScreen(),
+      routes: {
+        'home': (context) => Home(),
+        'login': (context) => AuthScreen(authType: AuthType.login),
+        'register': (context) => AuthScreen(authType: AuthType.register),
+      },
     );
   }
 }
