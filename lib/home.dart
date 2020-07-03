@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutterday/add_note.dart';
+import 'package:flutterday/services/auth.dart';
 import 'package:flutterday/task.dart';
 
 import 'todo_item.dart';
@@ -11,8 +12,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int _numberOfTasks = 25;
+  int _numberOfTasks = 2;
   List<Task> _todoList;
+  AuthBase authBase = AuthBase();
 
   @override
   void initState() {
@@ -43,14 +45,13 @@ class _HomeState extends State<Home> {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0.0,
-      leading: IconButton(
-        onPressed: null,
-        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
-      ),
       actions: <Widget>[
         IconButton(
-          onPressed: null,
-          icon: Icon(Icons.more_vert, color: Colors.white),
+          onPressed: () {
+            authBase.logout();
+            Navigator.of(context).pushReplacementNamed('login');
+          },
+          icon: Icon(Icons.exit_to_app, color: Colors.white),
         )
       ],
     );
@@ -93,7 +94,7 @@ class _HomeState extends State<Home> {
             ),
           ),
           Text("All", style: Theme.of(context).textTheme.headline1,),
-          Text("$_numberOfTasks Tasks", style: TextStyle(fontSize: 22, color: Colors.white.withAlpha(140))),
+          Text("${_todoList.length} Tasks", style: TextStyle(fontSize: 22, color: Colors.white.withAlpha(140))),
         ],
       ),
     );
