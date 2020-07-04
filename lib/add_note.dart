@@ -1,9 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterday/services/auth.dart';
 import 'package:flutterday/task.dart';
 import 'package:intl/intl.dart';
 
 class AddNote extends StatefulWidget {
+  User currentUser;
+
+  AddNote(this.currentUser);
   @override
   _AddNoteState createState() => _AddNoteState();
 }
@@ -26,7 +31,10 @@ class _AddNoteState extends State<AddNote> {
         automaticallyImplyLeading: false,
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.close, color: Colors.black,),
+            icon: Icon(
+              Icons.close,
+              color: Colors.black,
+            ),
             onPressed: () => Navigator.pop(context, null),
           )
         ],
@@ -56,9 +64,13 @@ class _AddNoteState extends State<AddNote> {
                   onPressed: _pickDate,
                   child: Row(
                     children: <Widget>[
-                      Icon(Icons.notifications_none, color: Theme.of(context).primaryColor,),
+                      Icon(
+                        Icons.notifications_none,
+                        color: Theme.of(context).primaryColor,
+                      ),
                       SizedBox(width: 10.0),
-                      Text(DateFormat('MMM d hh:mm').format(_taskDate), style: Theme.of(context).textTheme.headline4)
+                      Text(DateFormat('MMM d hh:mm').format(_taskDate),
+                          style: Theme.of(context).textTheme.headline4)
                     ],
                   ),
                 ),
@@ -68,47 +80,53 @@ class _AddNoteState extends State<AddNote> {
           MaterialButton(
             height: 50.0,
             minWidth: double.infinity,
-            onPressed: (){
-              if(_controller.text.isEmpty)
-                return;
-              _newTask = Task(
-                title: _controller.text,
-                date: _taskDate
-              );
-              Navigator.pop(context, _newTask);
+            onPressed: () {
+              if (_controller.text.isEmpty) return;
+//              _newTask = Task(
+//                title: _controller.text,
+//                date: _taskDate
+//              );
+//              Navigator.pop(context, _newTask);
+              Firestore.instance
+                  .collection("users")
+                  .document(widget.currentUser.uid)
+                  .collection("notes")
+                  .add({
+                "title": _controller.text,
+                "date": _taskDate,
+                "status": false,
+              });
+              Navigator.of(context).pop();
             },
             color: Theme.of(context).primaryColor,
-            child: Text("Create", style: TextStyle(color: Colors.white, fontSize: 16.0),),
+            child: Text(
+              "Create",
+              style: TextStyle(color: Colors.white, fontSize: 16.0),
+            ),
           )
         ],
       ),
     );
   }
 
-  _pickDate()async{
+  _pickDate() async {
     DateTime date = await showDatePicker(
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime.now(),
         lastDate: DateTime(
           DateTime.now().year + 5,
-        )
-    );
-    if(date == null)
-      return;
-    TimeOfDay time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now()
-    );
+        ));
+    if (date == null) return;
+    TimeOfDay time =
+        await showTimePicker(context: context, initialTime: TimeOfDay.now());
     setState(() {
       _taskDate = DateTime(
           date.year,
           date.month,
           date.day,
-          time == null?_taskDate.hour:time.hour,
-          time == null?_taskDate.minute:time.minute
-      );
+          time == null ? _taskDate.hour : time.hour,
+          time == null ? _taskDate.minute : time.minute);
     });
-
   }
 }

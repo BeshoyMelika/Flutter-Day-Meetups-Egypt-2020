@@ -12,6 +12,11 @@ class AuthBase {
     return User(uid: user.uid);
   }
 
+  Future<User> getCurrentUser()async{
+    final FirebaseUser x = await FirebaseAuth.instance.currentUser();
+    return _userFromFirebase(x);
+  }
+
   Future<void> registerWithEmailAndPassword(
       String email, String password) async {
     try {
